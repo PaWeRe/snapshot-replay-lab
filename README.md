@@ -35,18 +35,25 @@ Seed example: the Hawesko `Intenterkennung` turn where gpt-oss-120b looped in pr
 
 ## Setup
 
-Needs the local `leaping/core` package (path dependency) and the env vars that
-`leaping.config` validates at import (Baseten/OpenAI keys + Google/Vertex creds).
-The simplest source of those is the monorepo's `voice/.env`.
+The tool imports `leaping`, and `leaping`'s pinned deps can **no longer be
+resolved standalone** (the only safe `semantic-router`, post CVE-2026-42208,
+pulls `litellm>=1.84 → openai>=2 / tiktoken 0.12 / tokenizers 0.22`, which
+conflict with leaping's pins — the monorepo only works via its committed
+`uv.lock`). So this tool **runs on the monorepo's venv** instead of building its
+own. `./run.sh` handles it:
 
 ```bash
 cd snapshot-replay-lab
-uv sync                                             # installs streamlit, openai, leaping (editable path dep)
-set -a && source ../leaping/voice/.env && set +a    # BASETEN_API_KEY, OPENAI_API_KEY, Google creds
-uv run streamlit run app.py
+./run.sh                          # adds streamlit+pandas to ../leaping/.venv (once), sources env, launches
+# monorepo elsewhere?  LEAPING_REPO=/path/to/leaping ./run.sh
 ```
 
-Then open the local URL, drag in your two JSON files, and go.
+`run.sh` sources `../leaping/voice/.env` for `BASETEN_API_KEY`, `OPENAI_API_KEY`
+and the Google/Vertex creds that `leaping.config` validates at import. Then open
+the local URL, drag in your two JSON files, and go.
+
+> Do **not** `uv run streamlit run app.py` here — that would try to resolve
+> `leaping` standalone and fail. Use `./run.sh`.
 
 ## Roadmap (candidate for the test-cases-rework RFC)
 
