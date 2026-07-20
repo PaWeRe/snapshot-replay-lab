@@ -165,7 +165,8 @@ def build_request(
     if system_override:
         agent.ctx.raw_base_system_message = system_override
 
-    agent.ctx.change_stage(UUID(stage_id))
+    # Registers ctx.stages and sets current_stage to our target (no side effects).
+    agent.ctx.init_stages(agent.stages, UUID(stage_id))
     stage = next((s for s in agent.stages if str(s.id) == stage_id), None)
     if stage is None:
         raise ValueError(f"stage {stage_id} not found in snapshot")
