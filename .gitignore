@@ -2,8 +2,11 @@
 __pycache__/
 *.pyc
 .streamlit/secrets.toml
-# never commit uploaded call data / snapshots / results
+# never commit uploaded call data / snapshots / results (contain prod PII)
 *.local.json
 results/
 uploads/
+snapshots/
+transcripts/
 .env
+.DS_Store
